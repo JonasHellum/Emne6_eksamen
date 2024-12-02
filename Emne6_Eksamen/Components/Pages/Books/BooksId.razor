@@ -1,0 +1,35 @@
+﻿@inject BooksService BooksService
+
+@page "/Book/{id:int}"
+
+
+@if (bookData != null)
+{
+    <p>ID: @bookData.id</p>
+    <h3>Title: @bookData.title</h3>
+    <p>Author: @bookData.author</p>
+    <p>Publication Date: @bookData.publication_date</p>
+    <p>Characters: @bookData.characters</p>
+}
+else
+{
+    <p>Loading...</p>
+}
+
+
+
+
+@code {
+
+    [Parameter]
+    public int id { get; set; }
+
+    private BooksData bookData;
+    private List<BooksData> allBooksData;
+
+    protected override void OnInitialized()
+    {
+        bookData = BooksService.GetByID(id);
+    }
+
+}

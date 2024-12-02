@@ -1,0 +1,52 @@
+﻿@inject BooksService BooksService
+
+@page "/Books"
+
+
+@if (loaded)
+{
+    @if (booksData != null)
+    {
+        @foreach (BooksData books in booksData)
+        {
+            <div>
+                <CategoryComponent thisBooksData="@books"></CategoryComponent>
+            </div>
+        }
+    }
+    else
+    {
+        <p>No data</p>
+    }
+}
+
+else
+{
+    <p>Loading...</p>
+}
+
+@code {
+    bool loaded = false;
+    List<BooksData> booksData { get; set; } = new List<BooksData>();
+
+    private async Task LoadData()
+    {
+        loaded = false;
+        HttpClient httpClient = new HttpClient();
+        string url = $"https://lotrapi.co/api/v1/books";
+        BooksResponse bookResponse = await httpClient.GetFromJsonAsync<BooksResponse>(url);
+
+        booksData = bookResponse.results;
+        
+        BooksService.SetBooksData(booksData);
+
+        loaded = true;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+    
+    
+}

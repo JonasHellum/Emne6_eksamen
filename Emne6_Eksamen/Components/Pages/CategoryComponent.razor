@@ -1,0 +1,20 @@
+﻿@if (thisCharacterData != null)
+{
+    <h3>@thisCharacterData.name</h3>
+    <a href="Character/@thisCharacterData.id">more info.</a>
+}
+else if (thisBooksData != null)
+{
+    <h3>@thisBooksData.title</h3>
+    <a href="Book/@thisBooksData.id">more info.</a>
+}
+else
+{
+    <p>No data available</p>
+}
+
+@code {
+    [Parameter] public CharacterData thisCharacterData { get; set; }
+    [Parameter] public BooksData thisBooksData { get; set; }
+    
+}

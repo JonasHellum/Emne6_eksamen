@@ -1,0 +1,78 @@
+﻿@inject CharacterService CharacterService
+
+@page "/Character/{id:int}"
+
+@if (characterData != null && realmData != null && speciesData != null
+     && raceData != null && groupData != null)
+{
+    <p>ID: @characterData.id</p>
+    <h3>Name: @characterData.name</h3>
+    <p>Realm: @realmData.name</p>
+    <p>Heigth: @characterData.height</p>
+    <p>Hair color: @characterData.hair_color</p>
+    <p>Eye color: @characterData.eye_color</p>
+    <p>Date of birth: @characterData.date_of_birth</p>
+    <p>Date of death: @characterData.date_of_death</p>
+    <p>Gender: @characterData.gender</p>
+    <p>Species: @speciesData.name</p>
+    <p>Race: @raceData.name</p>
+    <p>Group: @groupData.name</p>
+
+    <p>Weapons:</p>
+    <ul>
+        @foreach (var weapons in characterData.weapons)
+        {
+            <li>@weapons</li>
+        }
+    </ul>
+    
+    <p>Languages:</p>
+    <ul>
+        @foreach (var language in characterData.languages)
+        {
+            <li>@language</li>
+        }
+    </ul>
+    
+    <p>Films:</p>
+    <ul>
+        @foreach (var film in characterData.films)
+        {
+            <li>@film</li>
+        }
+    </ul>
+    
+    <p>Books:</p>
+    <ul>
+        @foreach (var book in characterData.books)
+        {
+            <li>@book</li>
+        }
+    </ul>
+    
+}
+
+@code {
+    [Parameter]
+    public int id { get; set; }
+
+    private GroupData groupData;
+    private RaceData raceData;
+    private SpeiciesData speciesData;
+    private RealmData realmData;
+    private CharacterData characterData;
+    private List<CharacterData> allCharacterData;
+
+    protected override async Task OnInitializedAsync()
+    {
+        characterData = CharacterService.GetByID(id);
+
+        if (!string.IsNullOrEmpty(characterData.realm))
+        {
+            realmData = await CharacterService.GetRealmAsync(characterData.realm);
+            speciesData = await CharacterService.GetSpeiciesAsync(characterData.species);
+            raceData = await CharacterService.GetRaceAsync(characterData.race);
+            groupData = await CharacterService.GetGroupDataAsync(characterData.group);
+        }
+    }
+}}

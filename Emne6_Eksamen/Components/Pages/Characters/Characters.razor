@@ -1,0 +1,50 @@
+﻿@inject CharacterService CharacterService
+
+@page "/Characters"
+
+
+@if (loaded)
+{
+    @if (characterData != null)
+    {
+        @foreach (CharacterData characters in characterData)
+        {
+            <div>
+                <CategoryComponent thisCharacterData="@characters"></CategoryComponent>
+            </div>
+        }
+    }
+    else
+    {
+        <p>No data</p>
+    }
+}
+
+else
+{
+    <p>Loading...</p>
+}
+
+@code {
+    bool loaded = false;
+    List<CharacterData> characterData { get; set; } = new List<CharacterData>();
+
+    private async Task LoadData()
+    {
+        loaded = false;
+        HttpClient httpClient = new HttpClient();
+        string url = $"https://lotrapi.co/api/v1/characters";
+        CharacterResponse characterResponse = await httpClient.GetFromJsonAsync<CharacterResponse>(url);
+
+        characterData = characterResponse.results;
+        
+        CharacterService.SetCharacterData(characterData);
+
+        loaded = true;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+}
