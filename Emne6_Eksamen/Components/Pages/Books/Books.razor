@@ -1,11 +1,12 @@
 ﻿@inject BooksService BooksService
+@inject HttpClient httpClient
 
 @page "/Books"
 
 
 @if (loaded)
 {
-    @if (booksData != null)
+    @if (booksData != null && booksData.Any())
     {
         @foreach (BooksData books in booksData)
         {
@@ -29,23 +30,33 @@ else
     bool loaded = false;
     List<BooksData> booksData { get; set; } = new List<BooksData>();
 
-    private async Task LoadData()
-    {
-        loaded = false;
-        HttpClient httpClient = new HttpClient();
-        string url = $"https://lotrapi.co/api/v1/books";
-        BooksResponse bookResponse = await httpClient.GetFromJsonAsync<BooksResponse>(url);
-
-        booksData = bookResponse.results;
-        
-        BooksService.SetBooksData(booksData);
-
-        loaded = true;
-    }
-
     protected override async Task OnInitializedAsync()
     {
-        await LoadData();
+        loaded = false;
+        
+        string url = $"https://lotrapi.co/api/v1/books";
+
+        try
+        {
+            BooksResponse bookResponse = await httpClient.GetFromJsonAsync<BooksResponse>(url);
+
+            booksData = bookResponse.results;
+
+            BooksService.SetBooksData(booksData);
+
+        }
+        catch (HttpRequestException e)
+        {
+            Console.WriteLine($"Request error: {e.Message}");
+            booksData = new List<BooksData>();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Error: {e.Message}");
+            booksData = new List<BooksData>();
+        }
+        
+        loaded = true;
     }
     
     

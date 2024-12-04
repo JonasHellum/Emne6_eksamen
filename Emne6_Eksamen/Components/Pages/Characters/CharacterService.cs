@@ -25,25 +25,82 @@ public class CharacterService : ICharacterService
 
     public async Task<RealmData> GetRealmAsync(string url)
     {
-        RealmData r = await _httpClient.GetFromJsonAsync<RealmData>(url);
-        return r;
+        return await ExecuteAsync(url, new RealmData());
     }
 
     public async Task<SpeiciesData> GetSpeiciesAsync(string url)
     {
-        SpeiciesData s = await _httpClient.GetFromJsonAsync<SpeiciesData>(url);
-        return s;
+        return await ExecuteAsync(url, new SpeiciesData());
     }
 
     public async Task<RaceData> GetRaceAsync(string url)
     {
-        RaceData r = await _httpClient.GetFromJsonAsync<RaceData>(url);
-        return r;
+        return await ExecuteAsync(url, new RaceData());
     }
 
-    public async Task<GroupData> GetGroupDataAsync(string url)
+    public async Task<GroupData> GetGroupAsync(string url)
     {
-        GroupData g = await _httpClient.GetFromJsonAsync<GroupData>(url);
-        return g;
+        return await ExecuteAsync(url, new GroupData());
+    }
+
+    public async Task<List<FilmsData>> GetFilmsAsync(List<string> url)
+    {
+        return await ExecuteCollectionAsync<FilmsData>(url);
+        
+    }
+    
+    public async Task<List<BooksCharData>> GetBooksAsync(List<string> url)
+    {
+        return await ExecuteCollectionAsync<BooksCharData>(url);
+    }
+
+    public async Task<List<LanguagesData>> GetLanguagesAsync(List<string> url)
+    {
+        return await ExecuteCollectionAsync<LanguagesData>(url);
+    }
+    
+    private async Task<T> ExecuteAsync<T>(string url, T defaultValue)
+    {
+        try
+        {
+            var result = await _httpClient.GetFromJsonAsync<T>(url);
+            return result ?? defaultValue;
+        }
+        catch (HttpRequestException e)
+        {
+            Console.WriteLine($"Request error: {e.Message}");
+            return defaultValue;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Error: {e.Message}");
+            return defaultValue;
+        }
+    }
+    
+    private async Task<List<T>> ExecuteCollectionAsync<T>(List<string> url)
+    {
+        var tasks = new List<Task<T>>();
+        foreach (var urls in url)
+        {
+            var fetchTask = _httpClient.GetFromJsonAsync<T>(urls);
+            tasks.Add(fetchTask);
+        }
+
+        try
+        {
+            var results = await Task.WhenAll(tasks);
+            return results.Where(r => r != null).ToList();
+        }
+        catch (HttpRequestException e)
+        {
+            Console.WriteLine($"Request error: {e.Message}");
+            return new List<T>();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Error: {e.Message}");
+            return new List<T>();
+        }
     }
 }

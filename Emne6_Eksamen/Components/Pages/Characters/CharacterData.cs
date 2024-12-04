@@ -1,10 +1,5 @@
 ﻿namespace Emne6_Eksamen.Components.Pages;
 
-public class CharacterResponse
-{
-    public List<CharacterData> results { get; set; }
-}
-
 public class CharacterData
 {
     public int id { get; set; }
@@ -25,6 +20,11 @@ public class CharacterData
     public List<string> books { get; set; }
 }
 
+public class CharacterResponse
+{
+    public List<CharacterData> results { get; set; }
+}
+
 public class RealmData
 {
     public string name { get; set; }
@@ -41,6 +41,21 @@ public class RaceData
 }
 
 public class GroupData
+{
+    public string name { get; set; }
+}
+
+public class FilmsData
+{
+    public string title { get; set; }
+}
+
+public class BooksCharData
+{
+    public string title { get; set; }
+}
+
+public class LanguagesData
 {
     public string name { get; set; }
 }

@@ -1,11 +1,12 @@
 ﻿@inject CharacterService CharacterService
+@inject HttpClient httpClient
 
 @page "/Characters"
 
 
 @if (loaded)
 {
-    @if (characterData != null)
+    @if (characterData != null && characterData.Any())
     {
         @foreach (CharacterData characters in characterData)
         {
@@ -28,23 +29,32 @@ else
 @code {
     bool loaded = false;
     List<CharacterData> characterData { get; set; } = new List<CharacterData>();
-
-    private async Task LoadData()
-    {
-        loaded = false;
-        HttpClient httpClient = new HttpClient();
-        string url = $"https://lotrapi.co/api/v1/characters";
-        CharacterResponse characterResponse = await httpClient.GetFromJsonAsync<CharacterResponse>(url);
-
-        characterData = characterResponse.results;
-        
-        CharacterService.SetCharacterData(characterData);
-
-        loaded = true;
-    }
-
+    
     protected override async Task OnInitializedAsync()
     {
-        await LoadData();
+        loaded = false;
+        
+        string url = $"https://lotrapi.co/api/v1/characters";
+
+        try
+        {
+            CharacterResponse characterResponse = await httpClient.GetFromJsonAsync<CharacterResponse>(url);
+
+            characterData = characterResponse.results;
+
+            CharacterService.SetCharacterData(characterData);
+        }
+        catch (HttpRequestException e)
+        {
+            Console.WriteLine($"Request error: {e.Message}");
+            characterData = new List<CharacterData>();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Error: {e.Message}");
+            characterData = new List<CharacterData>();
+        }
+
+        loaded = true;
     }
 }

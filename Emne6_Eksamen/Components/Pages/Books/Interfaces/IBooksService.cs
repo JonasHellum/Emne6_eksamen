@@ -2,5 +2,5 @@
 
 public interface IBooksService : IBaseService<BooksData>
 {
-    
+    Task<List<CharactersCharData>> GetCharactersAsync(List<string> url);
 }

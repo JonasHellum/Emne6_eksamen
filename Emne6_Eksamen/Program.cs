@@ -7,10 +7,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+builder.Services.AddHttpClient<BooksService>();
 builder.Services.AddHttpClient<CharacterService>();
 
-builder.Services.AddSingleton<BooksService>();
-builder.Services.AddSingleton<CharacterService>();
+builder.Services
+    .AddSingleton<BooksService>()
+    .AddSingleton<CharacterService>();
 
 var app = builder.Build();
 

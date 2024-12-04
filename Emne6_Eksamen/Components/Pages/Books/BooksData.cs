@@ -14,3 +14,8 @@ public class BooksData
     public List<string> characters { get; set; }
     public string url { get; set; }
 }
+
+public class CharactersCharData
+{
+    public string name { get; set; }
+}

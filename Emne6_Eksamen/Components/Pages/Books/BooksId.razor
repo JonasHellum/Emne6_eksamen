@@ -2,14 +2,32 @@
 
 @page "/Book/{id:int}"
 
-
-@if (bookData != null)
+@if (loaded)
 {
-    <p>ID: @bookData.id</p>
-    <h3>Title: @bookData.title</h3>
-    <p>Author: @bookData.author</p>
-    <p>Publication Date: @bookData.publication_date</p>
-    <p>Characters: @bookData.characters</p>
+    @if (bookData != null)
+    {
+        <p>ID: @bookData.id</p>
+        <h3>Title: @bookData.title</h3>
+        <p>Author: @bookData.author</p>
+        <p>Publication Date: @bookData.publication_date</p>
+
+        @if (charactersData.Any())
+        {
+            <p>Characters: </p>
+            foreach (var character in charactersData)
+            {
+                <li>@character.name</li>
+            }
+        }
+        else
+        {
+            <P>Characters: Something went wrong when getting the data</P>
+        }
+    }
+    else
+    {
+        <p>No data...</p>
+    }
 }
 else
 {
@@ -18,18 +36,31 @@ else
 
 
 
-
 @code {
 
     [Parameter]
     public int id { get; set; }
 
+    bool loaded = false;
+    private List<CharactersCharData> charactersData;
     private BooksData bookData;
-    private List<BooksData> allBooksData;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+        loaded = false;
         bookData = BooksService.GetByID(id);
+
+        if (bookData != null)
+        {
+            var charTask = BooksService.GetCharactersAsync(bookData.characters);
+
+            await Task.WhenAll(charTask);
+
+            charactersData = await charTask;
+
+        }
+        
+        loaded = true;
     }
 
 }
