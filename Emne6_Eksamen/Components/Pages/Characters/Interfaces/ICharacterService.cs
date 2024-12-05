@@ -9,4 +9,5 @@ public interface ICharacterService : IBaseService<CharacterData>
     Task<List<FilmsData>> GetFilmsAsync(List<string> url);
     Task<List<BooksCharData>> GetBooksAsync(List<string> url);
     Task<List<LanguagesData>> GetLanguagesAsync(List<string> url);
+    void SetCharacterData(List<CharacterData> characterData);
 }

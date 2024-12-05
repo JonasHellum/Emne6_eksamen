@@ -1,6 +1,8 @@
-﻿@inject CharacterService CharacterService
+﻿@inject ICharacterService CharacterService
+@using Emne6_Eksamen.Components.Pages.Interfaces
 
 @page "/Character/{id:int}"
+
 
 @if (loaded)
 {
@@ -90,7 +92,17 @@ else
     protected override async Task OnInitializedAsync()
     {
         loaded = false;
-        characterData = CharacterService.GetByID(id);
+
+        try
+        {
+            characterData = CharacterService.GetByID(id);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Error: {e}");
+            characterData = new CharacterData();
+        }
+        
 
         if (characterData != null)
         {

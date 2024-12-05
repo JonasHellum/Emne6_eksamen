@@ -1,5 +1,6 @@
 using Emne6_Eksamen.Components;
 using Emne6_Eksamen.Components.Pages;
+using Emne6_Eksamen.Components.Pages.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,8 +12,8 @@ builder.Services.AddHttpClient<BooksService>();
 builder.Services.AddHttpClient<CharacterService>();
 
 builder.Services
-    .AddSingleton<BooksService>()
-    .AddSingleton<CharacterService>();
+    .AddSingleton<IBooksService, BooksService>()
+    .AddSingleton<ICharacterService, CharacterService>();
 
 var app = builder.Build();
 

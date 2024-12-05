@@ -1,6 +1,8 @@
-﻿@inject BooksService BooksService
+﻿@inject IBooksService BooksService
+@using Emne6_Eksamen.Components.Pages.Interfaces
 
 @page "/Book/{id:int}"
+
 
 @if (loaded)
 {
@@ -48,7 +50,16 @@ else
     protected override async Task OnInitializedAsync()
     {
         loaded = false;
-        bookData = BooksService.GetByID(id);
+        try
+        {
+            bookData = BooksService.GetByID(id);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Error: {e}");
+            bookData = new BooksData();
+        }
+        
 
         if (bookData != null)
         {
